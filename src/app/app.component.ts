@@ -21,18 +21,14 @@ export class AppComponent {
   constructor(){}
 
   connect() {
-  	var headers = new Headers();
-    headers.append('Access-Control-Allow-Origin' , '*');
-    //connect to stomp where stomp endpoint is exposed
-    let socket = new SockJS("http://206.189.136.143:8010");
+  	//connect to stomp where stomp endpoint is exposed
+    let socket = new SockJS("http://206.189.136.143:8010/order-book/ETHBCH");
     // let socket = new WebSocket("http://206.189.136.143:8010");
     this.ws = Stomp.over(socket);
     let that = this;
     this.ws.connect({}, function(frame) {
-      that.ws.subscribe("/errors", function(message) {
-        alert("Error " + message.body);
-      });
-      that.ws.subscribe("/orders", function(message) {
+      
+      that.ws.subscribe("/order/book/ETHBCH", function(message) {
         console.log(message)
         that.showGreeting(message.body);
       });
@@ -42,6 +38,7 @@ export class AppComponent {
     });
   }
 
+
   disconnect() {
     if (this.ws != null) {
       this.ws.ws.close();
@@ -50,16 +47,17 @@ export class AppComponent {
     console.log("Disconnected");
   }
 
-  sendName() {
-    let data = JSON.stringify({
-      'name' : this.name
-    })
-    this.ws.send("/app/message", {}, data);
-  }
+  // sendName() {
+  //   let data = JSON.stringify({
+  //     'name' : this.name
+  //   })
+  //   this.ws.send("/app/message", {}, data);
+  // }
 
   showGreeting(message) {
     this.showConversation = true;
     this.greetings.push(message)
+    console.log(this.greetings);
   }
 
   setConnected(connected) {
